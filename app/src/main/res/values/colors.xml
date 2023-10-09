@@ -2,9 +2,10 @@
 <resources>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
-    <color name="Orange">#FFFFb703</color>
-    <color name="DarkOrange">#FFFb8500</color>
-    <color name="DarkBlue">#FF023047</color>
+    <color name="orange">#FFFFb703</color>
+    <color name="red">#B71C1C</color>
+    <color name="darkOrange">#FFFb8500</color>
+    <color name="darkBlue">#FF023047</color>
     <color name="waterBlue">#FF219ebc</color>
     <color name="skyBlue">#FF8ecae6</color>
 </resources>

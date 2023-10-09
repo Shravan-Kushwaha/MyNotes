@@ -18,15 +18,14 @@ import javax.inject.Inject
 class HomeViewModel @Inject constructor(private val db: MyDatabase) : ViewModel() {
     suspend fun getAllNote(): List<Note> {
         var allNote: List<Note> = ArrayList()
-        var job: Job = CoroutineScope(Dispatchers.IO).async { }
         try {
-            job = CoroutineScope(Dispatchers.IO).async {
+            val job = CoroutineScope(Dispatchers.IO).async {
                 allNote = db.noteDAO().getAllNotes()
             }
+            job.await()
         } catch (e: Exception) {
             Log.e(Constants.TAG, "AddNoteViewModel getAllNote: Exception ${e.message}")
         }
-        job.join()
         return allNote
     }
 }

@@ -12,6 +12,8 @@ class SplashActivity : AppCompatActivity() {
         window.navigationBarColor = Color.parseColor("#FFFFFF")
         window.statusBarColor = Color.parseColor("#FFFFFF")
         setContentView(R.layout.activity_splash)
-        startActivity(Intent(this, HomeActivity::class.java))
+        val intent = Intent(this, HomeActivity::class.java)
+        startActivity(intent)
+        finish()
     }
 }
