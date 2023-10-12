@@ -36,17 +36,27 @@ class AddNoteActivity : AppCompatActivity() {
     lateinit var binding: ActivityAddNoteBinding
     lateinit var viewModel: AddNoteViewModel
     var timeStamp: Long = 0
+    lateinit var tvTitle: String
+    lateinit var tvBody: String
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setUI()
         setClickListener()
+        getBundleExtra()
+    }
 
+    private fun getBundleExtra() {
+        if (intent.extras != null) {
+            tvTitle = intent.extras!!.getString("title").toString()
+            tvBody = intent.extras!!.getString("body").toString()
+            binding.tvNoteTitle.setText(tvTitle)
+            binding.tvNoteBody.setText(tvBody)
+        }
     }
 
     override fun onPause() {
         super.onPause()
         insertNoteInRoom()
-
     }
 
     private fun setUI() {
@@ -59,44 +69,49 @@ class AddNoteActivity : AppCompatActivity() {
             headerBack.ivDrawerBackIcon.setOnClickListener { finish() }
             headerBack.ivBellIcon.setOnClickListener {
                 setBottomSheet()
-
-                cvBottomSheet.setOnClickListener {
-                    val dialog = Dialog(this@AddNoteActivity, R.style.PauseDialog)
-                    val dialogBinding: DialogDateTimePickerBinding = DataBindingUtil.inflate(
-                        LayoutInflater.from(this@AddNoteActivity),
-                        R.layout.dialog_date_time_picker,
-                        null,
-                        false
-                    )
-                    dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
-                    dialog.setContentView(dialogBinding.root)
-
-                    val lp = WindowManager.LayoutParams()
-                    lp.copyFrom(dialog.window!!.attributes)
-                    lp.width = LinearLayout.LayoutParams.MATCH_PARENT
-                    lp.height = LinearLayout.LayoutParams.WRAP_CONTENT
-                    lp.gravity = Gravity.CENTER
-
-                    dialog.window!!.setBackgroundDrawable(ColorDrawable(Color.WHITE))
-                    dialog.window!!.attributes = lp
-                    dialogBinding.cancelButton.setOnClickListener { v: View? -> dialog.dismiss() }
-                    dialogBinding.okButton.setOnClickListener {
-                        setNotification()
-                        dialog.dismiss()
-
-                    }
-                    dialogBinding.tvDate.setOnClickListener {
-                        setDatePicker(dialogBinding)
-                    }
-
-                    dialogBinding.tvTime.setOnClickListener {
-                        setTimePicker(dialogBinding)
-                    }
-                    dialog.show()
-                }
+                setupDialog()
             }
         }
 
+    }
+
+    private fun setupDialog() {
+        val dialog = Dialog(this@AddNoteActivity, R.style.PauseDialog)
+        val dialogBinding: DialogDateTimePickerBinding = DataBindingUtil.inflate(
+            LayoutInflater.from(this@AddNoteActivity),
+            R.layout.dialog_date_time_picker,
+            null,
+            false
+        )
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
+        dialog.setContentView(dialogBinding.root)
+
+        val lp = WindowManager.LayoutParams()
+        lp.copyFrom(dialog.window!!.attributes)
+        lp.width = LinearLayout.LayoutParams.MATCH_PARENT
+        lp.height = LinearLayout.LayoutParams.WRAP_CONTENT
+        lp.gravity = Gravity.CENTER
+
+        dialog.window!!.setBackgroundDrawable(ColorDrawable(Color.WHITE))
+        dialog.window!!.attributes = lp
+
+        binding.cvBottomSheet.setOnClickListener {
+            dialogBinding.cancelButton.setOnClickListener { v: View? -> dialog.dismiss() }
+
+            dialogBinding.okButton.setOnClickListener {
+                setNotification()
+                dialog.dismiss()
+            }
+
+            dialogBinding.tvDate.setOnClickListener {
+                setDatePicker(dialogBinding)
+            }
+
+            dialogBinding.tvTime.setOnClickListener {
+                setTimePicker(dialogBinding)
+            }
+        }
+        dialog.show()
     }
 
     private fun setNotification() {
@@ -112,7 +127,7 @@ class AddNoteActivity : AppCompatActivity() {
         intent.putExtra("notification_id", 1) // Unique ID for the notification
         val pendingIntent =
             PendingIntent.getBroadcast(this, 0, intent, PendingIntent.FLAG_IMMUTABLE)
-        timeStamp = System.currentTimeMillis()+5000
+        timeStamp = System.currentTimeMillis() + 5000
 
 // Schedule the notification
         alarmManager.set(AlarmManager.RTC, timeStamp, pendingIntent)
@@ -143,7 +158,7 @@ class AddNoteActivity : AppCompatActivity() {
 
         materialTimePicker.addOnPositiveButtonClickListener {
             dialogBinding.tvTime.text = viewModel.formatDate(materialTimePicker)
-            timeStamp
+
         }
     }
 
@@ -158,7 +173,7 @@ class AddNoteActivity : AppCompatActivity() {
         if (binding.tvNoteTitle.text.toString().isNotEmpty() || binding.tvNoteBody.text.toString()
                 .isNotEmpty()
         ) {
-            viewModel.insert(
+            viewModel.upsert(
                 binding.tvNoteTitle.text.toString(),
                 binding.tvNoteBody.text.toString()
             )

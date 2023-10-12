@@ -19,10 +19,10 @@ import javax.inject.Inject
 
 @HiltViewModel
 class AddNoteViewModel @Inject constructor(private val db: MyDatabase) : ViewModel() {
-    fun insert(title: String, body: String) {
+    fun upsert(title: String, body: String) {
         try {
             CoroutineScope(Dispatchers.IO).launch {
-                db.noteDAO().insert(
+                db.noteDAO().upsert(
                     Note(
                         title = title, body = body
                     )
@@ -73,6 +73,4 @@ class AddNoteViewModel @Inject constructor(private val db: MyDatabase) : ViewMod
         }
         return formattedTime
     }
-
-
 }

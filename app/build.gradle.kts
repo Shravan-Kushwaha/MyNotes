@@ -12,7 +12,7 @@ android {
 
     defaultConfig {
         applicationId = "com.example.mynotes"
-        minSdk = 31
+        minSdk = 30
         targetSdk = 34
         versionCode = 1
         versionName = "1.0"
@@ -49,7 +49,7 @@ dependencies {
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
 
-    //ROOM
+    //Room
     val room_version = "2.5.2"
 
     implementation("androidx.room:room-runtime:$room_version")

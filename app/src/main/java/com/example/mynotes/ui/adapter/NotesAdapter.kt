@@ -76,6 +76,16 @@ class NotesAdapter(private val list: List<Note>) :
                             cbCheck.isChecked = isCheck
                             cbCheck.visibility = View.VISIBLE
                         }
+                    } else {
+                        isLongClickEnable = false
+                        holder.itemView.context.startActivity(
+                            Intent(
+                                holder.itemView.context,
+                                AddNoteActivity::class.java
+                            )
+                                .putExtra("title", tvNoteTitle.text.toString())
+                                .putExtra("body", tvNoteBody.text.toString())
+                        )
                     }
 
                 } else {
@@ -84,6 +94,8 @@ class NotesAdapter(private val list: List<Note>) :
                             holder.itemView.context,
                             AddNoteActivity::class.java
                         )
+                            .putExtra("title", tvNoteTitle.text.toString())
+                            .putExtra("body", tvNoteBody.text.toString())
                     )
                 }
             }
