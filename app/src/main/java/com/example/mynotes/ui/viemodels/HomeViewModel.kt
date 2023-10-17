@@ -1,6 +1,7 @@
 package com.example.mynotes.ui.viemodels
 
 import android.util.Log
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import androidx.room.Insert
 import com.example.mynotes.data.local.database.MyDatabase
@@ -16,16 +17,32 @@ import javax.inject.Inject
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(private val db: MyDatabase) : ViewModel() {
-    suspend fun getAllNote(): List<Note> {
-        var allNote: List<Note> = ArrayList()
-        try {
-            val job = CoroutineScope(Dispatchers.IO).async {
-                allNote = db.noteDAO().getAllNotes()
-            }
-            job.await()
-        } catch (e: Exception) {
-            Log.e(Constants.TAG, "AddNoteViewModel getAllNote: Exception ${e.message}")
-        }
-        return allNote
+
+    val allNotes: LiveData<List<Note>> by lazy {
+        db.noteDAO().getAllNotes()
     }
+
+    fun delete(id: Int) {
+        try {
+            CoroutineScope(Dispatchers.IO).launch {
+                db.noteDAO().delete(Note("", "", id.toLong()))
+            }
+
+        } catch (e: Exception) {
+            Log.e(Constants.TAG, "AddNoteViewModel insert: Exception ${e.message}")
+        }
+    }
+    /*    suspend fun getAllNote(): List<Note> {
+            var allNote: List<Note> = ArrayList()
+            try {
+                val job = CoroutineScope(Dispatchers.IO).async {
+                    allNote = db.noteDAO().getAllNotes()
+                }
+                job.await()
+            } catch (e: Exception) {
+                Log.e(Constants.TAG, "AddNoteViewModel getAllNote: Exception ${e.message}")
+            }
+            return allNote
+        }*/
+
 }

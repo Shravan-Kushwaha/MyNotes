@@ -2,25 +2,19 @@ package com.example.mynotes.ui.activity
 
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
-import android.window.OnBackInvokedDispatcher
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
-import androidx.recyclerview.widget.StaggeredGridLayoutManager.HORIZONTAL
 import androidx.recyclerview.widget.StaggeredGridLayoutManager.VERTICAL
 import com.example.mynotes.R
 import com.example.mynotes.data.local.entity.Note
 import com.example.mynotes.databinding.ActivityHomeBinding
 import com.example.mynotes.ui.adapter.NotesAdapter
-import com.example.mynotes.ui.viemodels.AddNoteViewModel
+import com.example.mynotes.ui.interfaces.OnClick
 import com.example.mynotes.ui.viemodels.HomeViewModel
-import com.example.mynotes.utils.Constants
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
@@ -48,20 +42,25 @@ class HomeActivity : AppCompatActivity() {
     private fun setNoteRecyclerView() {
         val layoutManager = StaggeredGridLayoutManager(2, VERTICAL)
         binding.rvNotes.layoutManager = layoutManager
-        try {
-            CoroutineScope(Dispatchers.Main).launch {
+        lifecycleScope.launch {
+            viewModel.allNotes.observe(this@HomeActivity) { notes ->
+                adapter = NotesAdapter(notes)
+                binding.rvNotes.adapter = adapter
+            }
+        }
+
+        /*try {
+            CoroutineScope(Dispatchers.IO).launch {
                 val job = CoroutineScope(Dispatchers.IO).async {
                     val list = viewModel.getAllNote()
-                    adapter = NotesAdapter(
-                        list
-                    )
+                    adapter = NotesAdapter(list)
                 }
                 job.await()
                 binding.rvNotes.adapter = adapter
             }
         } catch (e: Exception) {
             Log.e(Constants.TAG, "HomeActivity onResume: Exception ${e.message}")
-        }
+        }*/
     }
 
     private fun setClickListener() {
@@ -72,6 +71,9 @@ class HomeActivity : AppCompatActivity() {
                     AddNoteActivity::class.java
                 )
             )
+        }
+        binding.footer.ivCheckBoxIcon.setOnClickListener {
+
         }
     }
 

@@ -4,11 +4,6 @@ import android.content.Intent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.CheckBox
-import android.widget.ImageView
-import android.widget.TextView
-import androidx.constraintlayout.motion.widget.MotionLayout
-import androidx.core.view.isVisible
 import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.example.mynotes.R
@@ -16,13 +11,15 @@ import com.example.mynotes.base.BaseViewHolder
 import com.example.mynotes.data.local.entity.Note
 import com.example.mynotes.databinding.ItemNotesListBinding
 import com.example.mynotes.ui.activity.AddNoteActivity
+import com.example.mynotes.ui.interfaces.OnClick
 
 
 class NotesAdapter(private val list: List<Note>) :
-    RecyclerView.Adapter<NotesAdapter.MyViewHolder>() {
+    RecyclerView.Adapter<NotesAdapter.MyViewHolder>(),OnClick {
     var isCheck = false
     var isLongClickEnable = false
     var itemSelectCount = 0
+    var ID = 0
 
     inner class MyViewHolder(val recyclerViewDataBinding: ItemNotesListBinding) :
         BaseViewHolder(recyclerViewDataBinding.root) {
@@ -30,6 +27,7 @@ class NotesAdapter(private val list: List<Note>) :
         override fun onBind(position: Int) {
             recyclerViewDataBinding.apply {
                 viewModel = list[position]
+                ID = list[position].id.toInt()
                 clMain.setOnLongClickListener {
                     isCheck = !isCheck
                     if (isCheck) itemSelectCount++ else itemSelectCount--
@@ -71,6 +69,7 @@ class NotesAdapter(private val list: List<Note>) :
                             itemSelectCount--
 
                         } else {
+                            onClick(ID)
                             itemSelectCount++
                             isCheck = true
                             cbCheck.isChecked = isCheck
@@ -85,6 +84,7 @@ class NotesAdapter(private val list: List<Note>) :
                             )
                                 .putExtra("title", tvNoteTitle.text.toString())
                                 .putExtra("body", tvNoteBody.text.toString())
+                                .putExtra("id", ID.toString())
                         )
                     }
 
@@ -96,9 +96,14 @@ class NotesAdapter(private val list: List<Note>) :
                         )
                             .putExtra("title", tvNoteTitle.text.toString())
                             .putExtra("body", tvNoteBody.text.toString())
+                            .putExtra("id", ID.toString())
                     )
                 }
             }
         }
+    }
+
+    override fun onClick(id: Int) {
+
     }
 }

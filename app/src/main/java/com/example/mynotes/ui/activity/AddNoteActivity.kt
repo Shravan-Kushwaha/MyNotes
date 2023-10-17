@@ -38,6 +38,7 @@ class AddNoteActivity : AppCompatActivity() {
     var timeStamp: Long = 0
     lateinit var tvTitle: String
     lateinit var tvBody: String
+    var id: String = "0"
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setUI()
@@ -47,6 +48,7 @@ class AddNoteActivity : AppCompatActivity() {
 
     private fun getBundleExtra() {
         if (intent.extras != null) {
+            id = intent.extras!!.getString("id").toString()
             tvTitle = intent.extras!!.getString("title").toString()
             tvBody = intent.extras!!.getString("body").toString()
             binding.tvNoteTitle.setText(tvTitle)
@@ -72,7 +74,6 @@ class AddNoteActivity : AppCompatActivity() {
                 setupDialog()
             }
         }
-
     }
 
     private fun setupDialog() {
@@ -158,7 +159,6 @@ class AddNoteActivity : AppCompatActivity() {
 
         materialTimePicker.addOnPositiveButtonClickListener {
             dialogBinding.tvTime.text = viewModel.formatDate(materialTimePicker)
-
         }
     }
 
@@ -173,10 +173,20 @@ class AddNoteActivity : AppCompatActivity() {
         if (binding.tvNoteTitle.text.toString().isNotEmpty() || binding.tvNoteBody.text.toString()
                 .isNotEmpty()
         ) {
-            viewModel.upsert(
-                binding.tvNoteTitle.text.toString(),
-                binding.tvNoteBody.text.toString()
+
+            /*  *//* if (intent.extras != null) {*//*
+                viewModel.update(
+                    id = id,
+                    title = binding.tvNoteTitle.text.toString(),
+                    body = binding.tvNoteBody.text.toString()
+                )
+            } else {*/
+            viewModel.insert(
+                id = id.toLong(),
+                title = binding.tvNoteTitle.text.toString(),
+                body = binding.tvNoteBody.text.toString()
             )
+            // }
         }
     }
 }
